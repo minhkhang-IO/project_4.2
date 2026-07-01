@@ -27,6 +27,7 @@ void runSystem() {
     int choice;
 
     printf("[System] Automatically loading data...\n");
+    loadDataFromFile(batches, &batchCount, orders, &orderCount);
    
    do {
         system("cls"); // LÀM SẠCH MÀN HÌNH trước khi in Menu chính
@@ -47,6 +48,7 @@ void runSystem() {
                 break;
             case 0:
                 printf("\n[System] Saving data and exiting...\n");
+                saveDataToFile(batches, batchCount, orders, orderCount);
                 printf("Goodbye!\n");
                 break;
             default:
@@ -120,23 +122,131 @@ void processBatchManager(Batch batches[], int* bCount) {
 
 // --- TINH NANG NHO CUA BATCHMANAGER
 void addBatch(Batch list[], int* count, Batch newBatch) {
-    printf("\n--> [Executing] addBatch...\n");
+    if (*count >= MAX_SIZE) {
+        printf("[Error] Batch list is full!\n");
+        return;
+    }
+    printf("\n--- Add New Batch ---\n");
+    printf("Enter Batch ID: ");
+    scanf("%19s", newBatch.batchID);
+    
+    for (int i = 0; i < *count; i++) {
+        if (strcmp(list[i].batchID, newBatch.batchID) == 0) {
+            printf("[Error] Batch ID '%s' already exists!\n", newBatch.batchID);
+            return;
+        }
+    }
+
+    printf("Enter Product Name: ");
+    while(getchar() != '\n');
+    fgets(newBatch.productName, MAX_STR, stdin);
+    newBatch.productName[strcspn(newBatch.productName, "\n")] = 0;
+
+    printf("Enter Unit: ");
+    scanf("%19s", newBatch.unit);
+
+    printf("Enter Storage Temp: ");
+    scanf("%f", &newBatch.StorageTemp);
+
+    printf("Enter Origin: ");
+    while(getchar() != '\n');
+    fgets(newBatch.origin, MAX_STR, stdin);
+    newBatch.origin[strcspn(newBatch.origin, "\n")] = 0;
+
+    printf("Enter Type (0 for FRESH, 1 for DRIED): ");
+    int typeInput;
+    scanf("%d", &typeInput);
+    newBatch.type = (typeInput == 0) ? FRESH : DRIED;
+
+    list[*count] = newBatch;
+    (*count)++;
+    printf("[Success] Batch added successfully!\n");
 }
 
 void displayBatches(Batch list[], int count) {
-    printf("\n--> [Executing] displayBatches...\n");
+    printf("\n--- List of Batches ---\n");
+    if (count == 0) {
+        printf("No batches available.\n");
+        return;
+    }
+    printf("%-15s %-20s %-10s %-10s %-20s %-10s\n", "ID", "Product Name", "Unit", "Temp", "Origin", "Type");
+    printf("-----------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < count; i++) {
+        printf("%-15s %-20s %-10s %-10.2f %-20s %-10s\n",
+            list[i].batchID, list[i].productName, list[i].unit,
+            list[i].StorageTemp, list[i].origin, 
+            list[i].type == FRESH ? "FRESH" : "DRIED");
+    }
 }
 
 void updateBatch(Batch list[], int count, char* batchID) {
-    printf("\n--> [Executing] updateBatch for ID: %s...\n", batchID);
+    for (int i = 0; i < count; i++) {
+        if (strcmp(list[i].batchID, batchID) == 0) {
+            printf("\n--- Update Batch ID: %s ---\n", batchID);
+            printf("Enter new Product Name: ");
+            while(getchar() != '\n');
+            fgets(list[i].productName, MAX_STR, stdin);
+            list[i].productName[strcspn(list[i].productName, "\n")] = 0;
+
+            printf("Enter new Unit: ");
+            scanf("%19s", list[i].unit);
+
+            printf("Enter new Storage Temp: ");
+            scanf("%f", &list[i].StorageTemp);
+
+            printf("Enter new Origin: ");
+            while(getchar() != '\n');
+            fgets(list[i].origin, MAX_STR, stdin);
+            list[i].origin[strcspn(list[i].origin, "\n")] = 0;
+
+            printf("Enter new Type (0 for FRESH, 1 for DRIED): ");
+            int typeInput;
+            scanf("%d", &typeInput);
+            list[i].type = (typeInput == 0) ? FRESH : DRIED;
+
+            printf("[Success] Batch updated successfully!\n");
+            return;
+        }
+    }
+    printf("[Error] Batch ID '%s' not found!\n", batchID);
 }
 
 void searchBatch(Batch list[], int count, char* keyword) {
-    printf("\n--> [Executing] searchBatch for: %s...\n", keyword);
+    printf("\n--- Search Results for '%s' ---\n", keyword);
+    int found = 0;
+    printf("%-15s %-20s %-10s %-10s %-20s %-10s\n", "ID", "Product Name", "Unit", "Temp", "Origin", "Type");
+    printf("-----------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < count; i++) {
+        if (strstr(list[i].batchID, keyword) != NULL || strstr(list[i].productName, keyword) != NULL) {
+            printf("%-15s %-20s %-10s %-10.2f %-20s %-10s\n",
+                list[i].batchID, list[i].productName, list[i].unit,
+                list[i].StorageTemp, list[i].origin, 
+                list[i].type == FRESH ? "FRESH" : "DRIED");
+            found = 1;
+        }
+    }
+    if (!found) {
+        printf("No matching batches found.\n");
+    }
 }
 
 void searchBatchByOrigin(Batch list[], int count, char* origin) {
-    printf("\n--> [Executing] searchBatchByOrigin for: %s...\n", origin);
+    printf("\n--- Search Results for Origin: '%s' ---\n", origin);
+    int found = 0;
+    printf("%-15s %-20s %-10s %-10s %-20s %-10s\n", "ID", "Product Name", "Unit", "Temp", "Origin", "Type");
+    printf("-----------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < count; i++) {
+        if (strstr(list[i].origin, origin) != NULL) {
+            printf("%-15s %-20s %-10s %-10.2f %-20s %-10s\n",
+                list[i].batchID, list[i].productName, list[i].unit,
+                list[i].StorageTemp, list[i].origin, 
+                list[i].type == FRESH ? "FRESH" : "DRIED");
+            found = 1;
+        }
+    }
+    if (!found) {
+        printf("No matching batches found.\n");
+    }
 }
 //==================DISTRIBUTIONMANAGER==================================
 void processDistributionManager(Distribution orders[], int* dCount) {
