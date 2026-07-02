@@ -294,7 +294,11 @@ void processDistributionManager(Distribution orders[], int* dCount) {
     } while (subChoice != 4);
 }
 
+<<<<<<< HEAD
 // --- KHUNG KHAI BÁO CÁC HÀM CON DIST4RIBUTION  ---
+=======
+// --- KHUNG KHAI BÁO CÁC HÀM CON DISTRIBUTION  ---
+>>>>>>> 2da649b8e993c33c544111bf65130322efcf8e2a
 void addDistribution(Distribution list[], int* count, Distribution newDist) {
     printf("\n--> [Executing] addDistribution...\n");
 }
