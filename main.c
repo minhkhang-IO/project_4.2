@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Menu.h"
+#include "menu.h"
 
 int main() {
-  
     runSystem();
     return 0;
 }
