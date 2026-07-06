@@ -1,4 +1,4 @@
-2
-1|1|1|1.00|1|1
-2|2|2|2.00|2|0
-0
+1
+123456|Chery|kg|13.00|Uc|0
+1
+123456|BachHoaXanh|Cuahanhtaphoa|2026|07|Unknown
